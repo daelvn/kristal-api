@@ -1,0 +1,49 @@
+-- alfons: moon
+export compose ==>
+  print @.ltext.dart "docker-compose build"
+  os.execute "docker-compose build"
+  print @.ltext.dart "docker-compose up"
+  os.execute "docker-compose up"
+
+clean_lua ==>
+  print @.ltext.dart "Removing all lua files"
+  os.execute "rm -rf site/*.lua"
+
+clean_nginx ==>
+  print @.ltext.dart "Removing nginx.conf.compiled"
+  os.execute "rm -rf site/nginx.conf.compiled"
+  
+clean_temp ==>
+  print @.ltext.dart "Removing _temp folders"
+  os.execute "rm -rf site/*_temp"
+
+export clean ==>
+  @.ltext.arrow "Cleaning project"
+  act @,
+    _prefix: "."
+
+    lua:   clean_lua
+    temp:  clean_temp
+    nginx: clean_nginx
+    code: =>
+      clean_lua @
+    lapis: =>
+      clean_temp @
+      clean_nginx @
+    all: =>
+      clean_lua @
+      clean_temp @
+      clean_nginx @
+
+compile_moon ==>
+  print @.ltext.dart "Compiling MoonScript files"
+  os.execute "moonc site"
+
+export compile ==>
+  print @.ltext.arrow "Compiling project"
+  act @,
+    _prefix: "."
+
+    moon: compile_moon
+    all: =>
+      compile_moon @
